@@ -1,42 +1,12 @@
-function getRandom(min, max) {
-  if (min > max) {
-    return Math.random() * (min - max) + max;
-  }
-  else {
-    return Math.random() * (max - min) + min;
-  }
-}
+const PICTURES_COUNT = 25;
+const AVATARS_COUNT = 6;
 
-function stringLength(string , maxLenght) {
-  if (stringLength <= maxLenght) {
-    // eslint-disable-next-line no-console
-    console.log(`Строка ${ string } занимает ${ string.length } символов`);
-  }
-  else {
-    // eslint-disable-next-line no-console
-    console.log('Строка превысила максимальное количество символов!');
-  }
-}
-
-function getRandomPositiveInteger (a, b) {
-  if (a < 0 || b < 0) {
-    return NaN;
-  }
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-  const result = Math.random() * (upper - lower + 1) + lower;
-  return Math.floor(result);
-}
-/* Что от нас хотят ?
-Написать необходимые функции для создания масива из 25 сгенерированных объектов.
- У каждого из которых есть следующие характеристики
- id:
- avatar:
- message:
- name:
- Эта программа похожа на футболистов. В связи с чем за основу попробуем взять футболистов*/
+const LikesCount = {
+  MIN: 15,
+  MAX: 200,
+};
 // Создали массив с коментами
-const commentsArray = [
+const commentLines = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
   'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
@@ -45,7 +15,7 @@ const commentsArray = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?'
 ];
 // создали массив с описанием
-const descriptionArray = [
+const descriptions = [
   'На картинке изображены лошади с х***и',
   'Ну и рожа',
   'Ты такая крассотка, а у меня только сотка. p.s. Джейсон Стетхем',
@@ -53,7 +23,7 @@ const descriptionArray = [
   'Брюнетка'
 ];
 // создали массив с именами
-const nameArray = [
+const names = [
   'Александра',
   'Карина',
   'Максим',
@@ -82,34 +52,46 @@ const nameArray = [
   'Олег'
 ];
 
-const getPhotos = function (photo) {
-  //написали функцию возвращающую рандомное число из масива для описания и имени
-  const randDescription = Math.floor(Math.random() * descriptionArray.length);
-  const randName = Math.floor(Math.random() * nameArray.length);
-  const randComents = Math.floor(Math.random() * commentsArray.length);
-  const rendAvatar = getRandom(1, 6).svg;
-  const photosObject = {
-    id: 0,
-    url: 0,
-    description: 0,
-    likes: 0,
-    comment: {
-      id: 0,
-      avatar: 0,
-      message: 0,
-      name: 0,
-    },
-  };
-  // цикл для изменения объектов массива
-  for (let i = 0; i < photo.length - 1; i++){
-    photosObject.id = i;
-    photosObject.url = photos/[i].jpg;
-    photosObject.description = descriptionArray[randDescription];
-    photosObject.likes = getRandom(25, 200);
-    photosObject.comment.message = commentsArray[randComents];
-    photosObject.comment.name = nameArray[randName];
-    photosObject.comment.avatar = img/avatar-[rendAvatar].svg;
-    return photo;
-  }
+const getRandomPositiveInteger = (a, b) => {
+  const lower = Math.ceil(Math.min(a, b));
+  const upper = Math.floor(Math.max(a, b));
+  const result = Math.random() * (upper - lower + 1) + lower;
+  return Math.floor(result);
 };
 
+const checkStringLength = (string , length) => string.length <= length;
+
+const getRandomArrayElement = (array) =>
+  array[getRandomPositiveInteger(0, array.length - 1)];
+
+const createMessage = () =>
+  Array.from({ length: getRandomPositiveInteger(1, 2) }, () =>
+    getRandomArrayElement(commentLines)
+  ).join('');
+
+const createComment = (index) => ({
+  id: index,
+  // В каких случаях используются бэктики, а в каких апострофы
+
+  avatar: `img/avatar-${getRandomPositiveInteger(1, AVATARS_COUNT)}.svg`,
+  message: createMessage(),
+  name: getRandomArrayElement(names),
+});
+
+const createPicture = (index) => ({
+  id: index,
+  url: `photos/${index}.jpg`,
+  description: getRandomArrayElement(descriptions),
+  likes: getRandomPositiveInteger(LikesCount.MIN, LikesCount.MAX),
+  comments: Array.from(
+    { length: getRandomPositiveInteger(0, 20) },
+    (_, commentIndex) => createComment(commentIndex + 1)
+  ),
+});
+
+const getPictures = () =>
+  Array.from({ length: PICTURES_COUNT }, (_, pictureIndex) =>
+    createPicture(pictureIndex + 1)
+  );
+checkStringLength('', 140);
+getPictures();
