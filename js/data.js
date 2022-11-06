@@ -87,3 +87,4 @@ checkStringLength('', 140);
 getPictures();
 
 export {createPicture};
+export {createComment};
