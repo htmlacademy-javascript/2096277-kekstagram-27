@@ -84,7 +84,7 @@ const getPictures = () =>
     createPicture(pictureIndex + 1)
   );
 checkStringLength('', 140);
-getPictures();
 
+export {getPictures};
 export {createPicture};
 export {createComment};

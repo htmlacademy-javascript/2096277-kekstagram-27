@@ -1,6 +1,6 @@
-import { showBigPicture } from './big-picture';
+import { showBigPicture } from './big-picture.js';
 
-const pictureTemplate = document.querySelector('#picture').content.querySelector('picture');
+const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 const container = document.querySelector('.pictures');
 
 const createPicture = function(data) {
