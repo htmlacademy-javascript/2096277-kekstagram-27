@@ -1,7 +1,5 @@
 //Создаем переменную с секцией для изоборажений
 const bigPicture = document.querySelector('.big-picture');
-//Создаем переменную с коментарием изображения
-const commentCount = document.querySelector('.social__comment-count');
 // Создали комментарий для изображения
 const commentList = document.querySelector('.social__comments');
 //кнопка для отправки комментариев
