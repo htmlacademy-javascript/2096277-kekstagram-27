@@ -1,7 +1,5 @@
 //Создаем переменную с секцией для изоборажений
 const bigPicture = document.querySelector('.big-picture');
-//Создаем переменную с коментарием изображения
-const commentCount = document.querySelector('.social__comment-count');
 // Создали комментарий для изображения
 const commentList = document.querySelector('.social__comments');
 //кнопка для отправки комментариев
@@ -25,6 +23,13 @@ const createComment = function({avatar, name, message}) {
 
   return comment;
 };
+const renderPictureDetails = function({ url, likes, description }) {
+  bigPicture.querySelector('.big-picture__img img').src = url;
+  bigPicture.querySelector('.big-picture__img img').alt = description;
+  bigPicture.querySelector('.likes-count').textContent = likes;
+  bigPicture.querySelector('.social__caption').textContent = description;
+};
+
 
 const renderComments = function(comments) {
   commentList.innerHTML = '';
@@ -36,6 +41,16 @@ const renderComments = function(comments) {
   });
 
   commentList.append(fragment);
+};
+
+const showBigPicture = function(data) {
+  bigPicture.classList.remove('hidden');
+  body.classList.add('modal-open');
+  commentsLoader.classList.add('hidden');
+  document.addEventListener('keydown', onEscKeyDown);
+
+  renderPictureDetails(data);
+  renderComments(data.comments);
 };
 
 const hideBigPicture = function() {
@@ -55,22 +70,6 @@ const onCancelButtonClick = function() {
   hideBigPicture();
 };
 
-const renderPictureDetails = function({ url, likes, description }) {
-  bigPicture.querySelector('.big-picture__img img').src = url;
-  bigPicture.querySelector('.big-picture__img img').alt = description;
-  bigPicture.querySelector('.likes-count').textContent = likes;
-  bigPicture.querySelector('.social__caption').textContent = description;
-};
-
-const showBigPicture = function(data) {
-  bigPicture.classList.remove('hidden');
-  body.classList.add('modal-open');
-  commentsLoader.classList.add('hidden');
-  document.addEventListener('keydown', onEscKeyDown);
-
-  renderPictureDetails(data);
-  renderComments(data.comments);
-};
 
 cancelButton.addEventListener('click', onCancelButtonClick);
 
