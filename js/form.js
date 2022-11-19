@@ -1,13 +1,11 @@
+import { resetEffect } from './effects.js';
 import { resetScale } from './slider.js';
 resetScale();
-// находим форму загрузки
 const imageUpload = document.querySelector('.img-upload__form');
 // находим тег body
 const body = document.querySelector('body');
 // находим кнопку закрытия формы редактировани
-const cancelButton = document.querySelector('#upload-cancel');
-// Находим начальное состояния поля загрузки изображения
-const fileField = document.querySelector('#upload-file');
+
 
 // находим форму редактирования изображения
 const imageEdit = document.querySelector('.img-upload__overlay');
@@ -28,9 +26,11 @@ const pristine = new Pristine(imageUpload, {
 
 // пишем функцию закрытия модального окна
 const closeModal = function() {
+  imageUpload.reset();
   resetScale();
-  imageEdit.classList.add('.hidden');
-  body.classList.remove('.modal-open');
+  resetEffect();
+  imageEdit.classList.add('hidden');
+  body.classList.remove('modal-open');
   document.removeEventListener('keydown', onEscKeyDown);
 };
 
@@ -45,10 +45,11 @@ function onEscKeyDown(evt) {
     closeModal();
   }
 }
-debugger;
+
 const showModal = function() {
-  imageEdit.classList.remove('.hidden');
-  body.classList.add('.modal-open');
+  imageEdit.classList.remove('hidden');
+  debugger
+  body.classList.add('modal-open');
   document.addEventListener('keydown', onEscKeyDown);
 };
 
@@ -94,8 +95,9 @@ const onFormSubmit = (evt) => {
   pristine.validate();
 };
 // пишем обработчик событий для открытия/закрытия модального окна
-fileField.addEventListener('change', onFileInputChange);
-cancelButton.addEventListener('click', onCancelButtonClick);
-imageUpload.addEventListener('submit', onFormSubmit);
+export {onFileInputChange};
+export {onCancelButtonClick};
+export {onFormSubmit};
+export {closeModal};
 
 
