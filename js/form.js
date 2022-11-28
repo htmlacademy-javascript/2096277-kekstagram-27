@@ -1,103 +1,69 @@
-import { resetEffect } from './effects.js';
-import { resetScale } from './slider.js';
-resetScale();
-const imageUpload = document.querySelector('.img-upload__form');
-// находим тег body
-const body = document.querySelector('body');
-// находим кнопку закрытия формы редактировани
+import { isEscapeKey } from './utils/utils.js';
 
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 
-// находим форму редактирования изображения
-const imageEdit = document.querySelector('.img-upload__overlay');
-// нужно решить, как данные будут отправляться на сервер и где они будут записываться
-const hashtag = document.querySelector('.text__hashtags');
-const yourComment = document.querySelector('.text__description');
-// пишем функцию, которая будет работать после выбра изображения
-// создаем переменную с допустимыми символами
-const MAX_HASHTAG_COUNT = 5;
-const VALID_SIMBOLS = /^#[a-zа-яё0-9]{1,19}$/i;
-// создаем пристин
-const pristine = new Pristine(imageUpload, {
-  classTo: 'img-upload__field-wrapper',
-  errorTextParent: 'img-upload__field-wrapper',
-  errorTextClass: 'img-upload__field-wrapper__error',
-});
+const form = document.querySelector('.img-upload__form');
 
+const miniPhotosEffects = document.querySelectorAll('.effects__preview');
 
-// пишем функцию закрытия модального окна
-const closeModal = function() {
-  imageUpload.reset();
-  resetScale();
-  resetEffect();
-  imageEdit.classList.add('hidden');
-  body.classList.remove('modal-open');
-  document.removeEventListener('keydown', onEscKeyDown);
+const formPhotoDownload = document.querySelector('.img-upload__overlay');
+const uploadFile = document.querySelector('#upload-file');
+const buttonCancel = formPhotoDownload.querySelector('#upload-cancel');
+
+const hashtagField = document.querySelector('.text__hashtags');
+const descriptionField = document.querySelector('.text__description');
+
+const preview = document.querySelector('.img-upload__preview img');
+
+const onFileInputChange = (evt) => openFormModal(evt);
+
+const changePhotoPreview = (file) => {
+  preview.src = URL.createObjectURL(file);
+  miniPhotosEffects.forEach((photo) => {
+    photo.style.backgroundImage = `url(${URL.createObjectURL(file)})`;
+  });
 };
 
-// создаем функцию модального окна
-const fieldOnFocuse = () =>
-  document.activeElement === hashtag ||
-  document.activeElement === yourComment;
 
-function onEscKeyDown(evt) {
-  if (evt.key === 'Escape' && !fieldOnFocuse()) {
+const isTextFieldFocused = () =>
+  document.activeElement === hashtagField ||
+  document.activeElement === descriptionField;
+
+const onPopupEscKeydown = (evt) => {
+  if (isEscapeKey(evt) && !isTextFieldFocused()) {
     evt.preventDefault();
-    closeModal();
+    closeFormModal();
+  }
+};
+
+const onButtonCancelClick = () => {
+  closeFormModal();
+  buttonCancel.removeEventListener('click', onButtonCancelClick);
+};
+
+
+function openFormModal () {
+  const file = uploadFile.files[0];
+  const fileName = file.name.toLowerCase();
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if (matches) {
+    formPhotoDownload.classList.remove('hidden');
+    document.body.classList.add('modal-open');
+    document.addEventListener('keydown', onPopupEscKeydown);
+    buttonCancel.addEventListener('click', onButtonCancelClick);
+    changePhotoPreview(file);
   }
 }
 
-const showModal = function() {
-  imageEdit.classList.remove('hidden');
-  debugger
-  body.classList.add('modal-open');
-  document.addEventListener('keydown', onEscKeyDown);
-};
+function closeFormModal () {
+  form.reset();
 
-// закрываем окно
-const onCancelButtonClick = function() {
-  closeModal();
-};
+  formPhotoDownload.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+  document.removeEventListener('keydown', onPopupEscKeydown);
+}
 
-//открываем окно
-const onFileInputChange = function() {
-  showModal();
-};
+uploadFile.addEventListener('change', onFileInputChange);
 
-// делаем проверку на валидные символы
-const isValidTag = function(tag) {
-  VALID_SIMBOLS.test(tag);
-};
-// проверяем теги на совпадение условиям
-const hasUniqueTags = function(tags) {
-  const lowerCaseTags = tags.map((tag) => tag.lowerCaseTags());
-  return lowerCaseTags.length === new Set(lowerCaseTags).size;
-};
-// Проверяем допустимую длину коментария
-const hasValidCount = (tags) => tags.length <= MAX_HASHTAG_COUNT;
-
-// создаем функцию валидации тегов
-const validateTags = (value) => {
-  const tags = value
-    .trim()
-    .split(' ')
-    .filter((tag) => tag.trim().length);
-  return hasValidCount(tags) && hasUniqueTags(tags) && tags.every(isValidTag);
-};
-
-pristine.addValidator(
-  hashtag,
-  validateTags,
-  'Неправильно заполнены хэштеги'
-);
-
-const onFormSubmit = (evt) => {
-  evt.preventDefault();
-  pristine.validate();
-};
-// пишем обработчик событий для открытия/закрытия модального окна
-export {onFileInputChange};
-export {onCancelButtonClick};
-export {onFormSubmit};
-export {closeModal};
-
-
+export { form, hashtagField, descriptionField, closeFormModal, onPopupEscKeydown };
